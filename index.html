@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>세빈이 영양제 복용 스케줄 (최적화)</title>
+<style>
+  :root{
+    --bg:#0f1420; --card:#1a2030; --card2:#222b3d; --line:#2c3650;
+    --text:#e8edf6; --muted:#9aa6bd; --accent:#5db0ff; --accent2:#7ee0c0;
+    --warn:#ff8a8a; --warnbg:#3a2230; --change:#ffd36b; --changebg:#3a3420;
+    --green:#7ee0a0; --pill:#26314a;
+    --morning:#ffcf7a; --noon:#7ed0ff; --after:#b89bff; --dinner:#ff9bb0; --night:#8aa0ff; --dawn:#9aa6bd;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(180deg,#0c1018,#0f1420 200px);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Malgun Gothic",sans-serif;
+    line-height:1.55;-webkit-font-smoothing:antialiased;padding-bottom:60px}
+  .wrap{max-width:920px;margin:0 auto;padding:24px 18px}
+  header{text-align:center;padding:18px 0 8px}
+  h1{font-size:26px;margin:0 0 6px;letter-spacing:-.3px}
+  .sub{color:var(--muted);font-size:14px}
+  .goals{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+  .goal{background:var(--pill);border:1px solid var(--line);color:var(--accent2);
+    padding:5px 12px;border-radius:20px;font-size:13px}
+  .toolbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:18px 0 6px}
+  .btn{background:var(--card2);border:1px solid var(--line);color:var(--text);
+    padding:8px 14px;border-radius:10px;font-size:13px;cursor:pointer;transition:.15s}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.active{background:var(--accent);color:#0a0f18;border-color:var(--accent);font-weight:600}
+  .progress{max-width:480px;margin:14px auto 0;font-size:13px;color:var(--muted);text-align:center}
+  .bar{height:8px;background:var(--card2);border-radius:8px;overflow:hidden;margin-top:6px}
+  .bar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:.3s}
+
+  .slot{background:var(--card);border:1px solid var(--line);border-radius:16px;margin:16px 0;overflow:hidden}
+  .slot-h{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none}
+  .slot-h:hover{background:var(--card2)}
+  .time{font-variant-numeric:tabular-nums;font-weight:700;font-size:17px;min-width:62px}
+  .slot-title{font-weight:600;font-size:15px;flex:1}
+  .slot-tag{font-size:12px;color:var(--muted);background:var(--pill);padding:3px 9px;border-radius:8px;white-space:nowrap}
+  .chev{color:var(--muted);transition:.2s;font-size:13px}
+  .slot.open .chev{transform:rotate(90deg)}
+  .slot-body{display:none;padding:4px 14px 14px}
+  .slot.open .slot-body{display:block}
+  .dot{width:10px;height:10px;border-radius:50%;flex:none}
+
+  .item{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:9px 0}
+  .item-top{display:flex;align-items:flex-start;gap:10px}
+  .chk{width:20px;height:20px;border:2px solid var(--line);border-radius:6px;flex:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;margin-top:1px;transition:.15s}
+  .chk.on{background:var(--green);border-color:var(--green)}
+  .chk.on::after{content:"✓";color:#0a0f18;font-size:13px;font-weight:800}
+  .name{font-weight:600;font-size:15px}
+  .name .dose{color:var(--muted);font-weight:400;font-size:13px;margin-left:6px}
+  .badges{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 0}
+  .b{font-size:11px;padding:2px 8px;border-radius:7px;border:1px solid var(--line);white-space:nowrap}
+  .b.fast{color:#ffd9a6;border-color:#5a4424;background:#2c2113}
+  .b.food{color:#a6d8ff;border-color:#244a5a;background:#13242c}
+  .b.fat{color:#ffd36b;border-color:#5a4e24;background:#2c2713}
+  .b.alone{color:#d9b6ff;border-color:#412c5a;background:#21132c}
+  .b.water{color:#a6ffe0;border-color:#245a4a;background:#132c24}
+  .why{font-size:13.5px;color:var(--text);margin:9px 0 0}
+  .why b{color:var(--accent2)}
+  .note{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+  .warn-line{font-size:12.5px;color:var(--warn);margin:6px 0 0}
+  .warn-line::before{content:"⚠️ ";}
+  .change-line{font-size:12.5px;color:var(--change);margin:6px 0 0;background:var(--changebg);
+    border:1px solid #5a4e24;border-radius:8px;padding:6px 9px}
+  .change-line::before{content:"⭐ 변경 ";font-weight:700}
+
+  .section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:18px 0}
+  .section h2{font-size:18px;margin:0 0 12px}
+  .section.warnbox{border-color:#5a2a3a;background:linear-gradient(180deg,#2a1722,#1a2030)}
+  .section.changebox{border-color:#5a4e24;background:linear-gradient(180deg,#2a2614,#1a2030)}
+  .rule{font-size:13.5px;margin:8px 0;padding-left:20px;position:relative}
+  .rule::before{content:"›";position:absolute;left:4px;color:var(--accent);font-weight:700}
+  .rule b{color:var(--accent2)}
+  .wrule{font-size:13.5px;margin:10px 0;padding:10px 12px;background:var(--warnbg);
+    border:1px solid #5a2a3a;border-radius:10px;color:#ffd0d0}
+  .wrule b{color:#fff}
+  details.faq{margin:8px 0;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--card2)}
+  details.faq summary{cursor:pointer;padding:11px 0;font-size:14px;font-weight:600}
+  details.faq[open]{padding-bottom:10px}
+  details.faq p{font-size:13px;color:var(--muted);margin:4px 0}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin:6px 0 0;font-size:12px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .disclaimer{font-size:12px;color:var(--muted);text-align:center;margin:24px auto 0;max-width:680px;
+    border-top:1px solid var(--line);padding-top:16px}
+  a{color:var(--accent)}
+  .hideMode .item:not(.is-change){display:none}
+  .hideMode .slot:not(.has-change){display:none}
+  .hideWarn .item:not(.is-warn){display:none}
+  .hideWarn .slot:not(.has-warn){display:none}
+
+  /* prevent any horizontal overflow */
+  *{max-width:100%}
+  .name,.why,.note,.warn-line,.change-line,.rule{overflow-wrap:break-word;word-break:break-word}
+
+  /* ===== MOBILE ===== */
+  @media (max-width:600px){
+    .wrap{padding:14px 11px}
+    h1{font-size:21px}
+    .sub{font-size:12.5px}
+    .goal{font-size:12px;padding:4px 10px}
+    .legend{gap:8px 12px;font-size:11px}
+    .toolbar{gap:6px}
+    .btn{padding:8px 11px;font-size:12.5px;flex:1 1 40%;text-align:center}
+    .slot-h{flex-wrap:wrap;gap:8px 10px;padding:13px 14px}
+    .time{font-size:16px;min-width:auto}
+    .slot-title{flex:1 1 60%;font-size:14px}
+    .slot-tag{order:3}
+    .chev{margin-left:auto}
+    .slot-body{padding:2px 10px 12px}
+    .item{padding:11px 12px}
+    .name{font-size:14.5px}
+    .name .dose{display:inline-block;margin-left:0;margin-top:2px}
+    .why,.note,.warn-line,.change-line{font-size:13px}
+    .section{padding:15px 13px}
+    .section h2{font-size:16px}
+    .chk{width:24px;height:24px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>💊 세빈이 영양제 복용 스케줄</h1>
+  <div class="sub">최신 연구 기반 최적 타이밍 · 마지막 업데이트 2026-06-24</div>
+  <div class="goals">
+    <span class="goal">🦠 장 건강·해독</span>
+    <span class="goal">⚡ 에너지·대사</span>
+    <span class="goal">💇 모발·항노화·피부</span>
+  </div>
+  <div class="legend">
+    <span>🟠 공복</span><span>🔵 식사와 함께</span><span>🟡 지방과 함께</span>
+    <span>🟣 단독 복용</span><span>⭐ 변경 권장</span><span>⚠️ 주의</span>
+  </div>
+</header>
+
+<div class="toolbar">
+  <button class="btn active" data-mode="all">전체 보기</button>
+  <button class="btn" data-mode="change">⭐ 변경점만</button>
+  <button class="btn" data-mode="warn">⚠️ 주의점만</button>
+  <button class="btn" id="expandAll">모두 펼치기</button>
+  <button class="btn" id="resetChk">체크 초기화</button>
+</div>
+<div class="progress">오늘 복용 진행률 <span id="pct">0%</span>
+  <div class="bar"><i id="barfill"></i></div>
+</div>
+
+<!-- ============ SCHEDULE ============ -->
+<div id="schedule"></div>
+
+<!-- ============ CHANGES ============ -->
+<div class="section changebox">
+  <h2>⭐ 기존 루틴 대비 핵심 변경 권장 (근거)</h2>
+  <div class="change-line" style="margin:8px 0">NAD 전구체(NMNH / NR)를 <b>점심 → 아침</b>으로 이동</div>
+  <p class="note">NAD+ 생성은 일주기 리듬상 <b style="color:var(--change)">아침에 정점</b>을 찍습니다. 대부분의 임상시험도 아침·아침식전 복용을 사용했고, 저녁 복용은 멜라토닌 생성·일주기를 교란할 수 있다는 보고가 있어 아침 공복(또는 아침식사 직전)이 가장 합리적입니다.</p>
+  <div class="change-line" style="margin:14px 0 8px">점심 13:00의 <b>마그네슘 2알을 제거</b> → 저녁·취침으로 통합</div>
+  <p class="note">같은 13:00에 아연/구리와 마그네슘을 함께 먹으면 <b style="color:var(--change)">미네랄 흡수 경쟁</b>이 생깁니다. 아연은 점심, 마그네슘은 저녁·취침으로 분리하면 둘 다 흡수가 좋아지고 마그네슘은 수면에도 도움이 됩니다.</p>
+  <div class="change-line" style="margin:14px 0 8px">Artichoke(아티초크)를 <b>취침 → 저녁 식후</b>로 이동</div>
+  <p class="note">아티초크는 담즙 분비·소화 촉진이 주 효능이라 <b style="color:var(--change)">식사와 함께</b>가 더 효과적입니다. TUDCA+Bitters와 같은 저녁 식사 타임에 묶으면 지방 소화·간 담즙 흐름을 함께 지원합니다.</p>
+  <div class="change-line" style="margin:14px 0 8px">비타민C는 아연/구리와 <b>1시간 이상 간격</b></div>
+  <p class="note">고용량 비타민C는 구리 흡수를 다소 낮출 수 있어, 아연/구리(13:00)와 시간을 띄우거나 아침으로 분산하는 편이 안전합니다.</p>
+</div>
+
+<!-- ============ WARNINGS ============ -->
+<div class="section warnbox">
+  <h2>⚠️ 반드시 알아둘 상호작용·안전 경고</h2>
+  <div class="wrule"><b>출혈 위험 스택:</b> 나토키나제 + 은행(Ginkgo) + 오메가-3 는 모두 항혈소판·항응고 경향이 있습니다. 함께 복용 시 출혈 위험이 누적되며, <b>항응고제(와파린, 아스피린 등) 복용·수술 예정 시 반드시 의사와 상담</b>하세요.</div>
+  <div class="wrule"><b>베르베린 약물 상호작용:</b> 베르베린은 간 효소(CYP3A4 등)에 작용해 여러 처방약의 농도를 바꿀 수 있고, 혈당강하제와 함께 시 <b>저혈당</b> 위험이 있습니다.</div>
+  <div class="wrule"><b>R-ALA + 혈당:</b> R-알파리포산은 혈당을 낮춥니다. 인슐린·혈당강하제 사용 시 초기 몇 주간 혈당을 자주 확인하세요.</div>
+  <div class="wrule"><b>미네랄 경쟁:</b> 아연·구리·칼슘·마그네슘·철은 서로 흡수를 방해합니다. 본 스케줄은 아연(점심)·칼슘(저녁)·마그네슘(취침)을 <b>최소 2시간 이상 분리</b>해 배치했습니다.</div>
+  <div class="wrule"><b>R-ALA는 금속 킬레이터:</b> R-ALA(아침 공복)는 미네랄과 결합하므로 아연/칼슘/마그네슘과 같은 시간대에 먹지 마세요(현재 스케줄은 분리되어 있음).</div>
+  <div class="wrule"><b>마그네슘 총량:</b> Natural Flow(취침) + Bluebonnet Ca/Mg(저녁)로 마그네슘이 중복됩니다. 묽은 변·복통이 생기면 총량을 줄이세요.</div>
+</div>
+
+<!-- ============ SELF-PLACEMENT RULES ============ -->
+<div class="section">
+  <h2>🧭 새 영양제 추가 시 — 스스로 배치하는 규칙</h2>
+  <p class="note" style="margin-bottom:10px">새 영양제가 생기면 아래 규칙으로 시간대를 정하세요. (애매하면 알려주시면 다시 맞춰 드릴게요.)</p>
+  <div class="rule"><b>지용성</b> (비타민 A·D·E·K, 아스타잔틴, CoQ10, 오메가-3, 커큐민 등) → 지방이 가장 많은 식사(보통 점심)와 함께. 지방 10–15g 이상이면 흡수 3–5배.</div>
+  <div class="rule"><b>미네랄</b> (아연·철·칼슘·마그네슘) → 서로 2시간 이상 분리. 아연은 식후 소량, 칼슘·마그네슘은 저녁·취침.</div>
+  <div class="rule"><b>NAD 전구체 / 활성 B군 / 에너지계</b> (NMN·NMNH·NR, B-complex, TTFD, CoQ10) → 아침~점심. 저녁엔 수면 방해 가능.</div>
+  <div class="rule"><b>수면·이완계</b> (마그네슘, 글리신, L-테아닌, 멜라토닌) → 취침 전.</div>
+  <div class="rule"><b>공복 흡수형</b> (글루타치온, R-ALA, 나토키나제, 일부 프로바이오틱스, L-라이신) → 식전 30–60분 또는 식후 2시간.</div>
+  <div class="rule"><b>혈당·소화효소·담즙계</b> (베르베린, 소화효소, 아티초크, TUDCA, 식전 혈당제) → 식사 직전·식사와 함께.</div>
+  <div class="rule"><b>흡착·해독 바인더</b> (GI Detox, 차콜, 클레이) → 다른 모든 영양제·약·음식과 1–2시간 분리(영양소까지 흡착).</div>
+</div>
+
+<p class="disclaimer">
+  이 스케줄은 일반적인 영양학·약동학 정보를 바탕으로 정리한 것으로, <b>의학적 조언이 아닙니다</b>.
+  복용 중인 약·기저질환·임신 여부에 따라 달라질 수 있으니, 변경 전 의사나 약사와 상의하세요.
+  특히 항응고제·혈당강하제·갑상선/호르몬제를 복용 중이라면 반드시 전문가 확인이 필요합니다.
+</p>
+</div>
+
+<script>
+// ---------- DATA ----------
+const F={fast:'🟠 공복',food:'🔵 식사와 함께',fat:'🟡 지방과 함께',alone:'🟣 단독',water:'🟢 물과 함께'};
+const slots=[
+ {time:"05:00",title:"기상 직후 · 장 해독",color:"--dawn",tag:"공복",items:[
+   {n:"GI Detox",d:"2캡슐",badge:["water"],why:"기상 직후 <b>완전 공복</b>에 물과 함께. 복용 후 10분 휴식.",note:"흡착 바인더라 다른 영양제·음식과 최소 1–2시간 띄워야 영양소까지 흡착되지 않습니다.",warn:""},
+ ]},
+ {time:"08:00",title:"오전 공복 · 해독·항산화·에너지",color:"--morning",tag:"공복",items:[
+   {n:"Glutathione NACET Complex",d:"",badge:["fast"],why:"<b>공복</b>에서 흡수가 좋은 항산화 핵심.",note:""},
+   {n:"R-ALA",d:"600mg (Na R-ALA)",badge:["fast"],why:"공복 30–60분 전 복용 시 혈중 농도↑. 음식(특히 고지방)은 흡수를 20–30% 낮춤.",note:"금속 킬레이터 → 아연·칼슘·마그네슘과 같은 시간 금지(현재 분리됨).",warn:"혈당을 낮춤 — 혈당강하제 병용 시 모니터링."},
+   {n:"Thiactive B (B12 포함)",d:"",badge:["fast"],why:"활성형 B군은 <b>오전 에너지·대사</b>에 유리. 저녁엔 각성 유발 가능.",note:""},
+   {n:"NMNH (MAAC10)",d:"250mg",badge:["fast"],why:"NAD+는 일주기상 <b>아침에 정점</b> — 임상시험 다수가 아침 복용. 저녁 복용은 멜라토닌·일주기 교란 가능.",note:"기존 NR을 NMNH로 대체하는 경우 동일하게 아침 배치.",change:"점심 → 아침으로 이동"},
+   {n:"Biocidin LSF",d:"",badge:["fast"],why:"리포좀 제형, <b>공복</b> 흡수.",note:""},
+ ]},
+ {time:"12:00",title:"점심 식전 30분",color:"--noon",tag:"식전",items:[
+   {n:"Better GI",d:"",badge:["fast"],why:"식전 30분 — 위산·소화 환경 준비.",note:""},
+ ]},
+ {time:"12:30",title:"점심 첫 숟갈",color:"--noon",tag:"식사 시작",items:[
+   {n:"MassZymes (소화효소)",d:"",badge:["food"],why:"식사 시작과 함께 — 단백질·지방 소화 지원.",note:""},
+ ]},
+ {time:"12:45",title:"점심 식사 중 · 지용성 흡수 최적",color:"--noon",tag:"지방과 함께",items:[
+   {n:"Omega-3 + Olive Oil",d:"",badge:["fat"],why:"지방 자체이자 다른 지용성 영양소의 <b>흡수 매개</b>.",note:""},
+   {n:"Vitamin K2 (MK-7, Bronson)",d:"100mcg",badge:["fat"],why:"지용성 — 지방과 함께. K2는 칼슘을 뼈로 유도.",note:""},
+   {n:"Astaxanthin (Double Wood)",d:"12mg",badge:["fat"],why:"지용성 — <b>지방 10–15g 이상</b>과 함께 시 흡수 3–5배. 항산화·피부·눈.",note:"혈중 농도는 복용 4–8시간 후 정점."},
+   {n:"PC (포스파티딜콜린)",d:"",badge:["fat"],why:"인지질 — 지방과 함께 흡수·세포막 지원.",note:""},
+   {n:"Nutrafol Women's Balance",d:"45+",badge:["fat"],why:"지용성 성분 포함, <b>식사와 함께</b> 권장. 모발.",note:""},
+   {n:"CoQ10",d:"",badge:["fat"],why:"지용성 — 지방과 함께. 에너지·미토콘드리아. 약한 각성 가능해 낮 복용.",note:""},
+   {n:"Ginkgo (은행)",d:"",badge:["food","fat"],why:"식사와 함께, 낮 복용. 순환·인지.",note:"",warn:"나토키나제·오메가-3와 출혈 위험 누적 — 항응고제 시 상담."},
+   {n:"Benfotiamine",d:"",badge:["fat"],why:"지용성 티아민 유도체 — 식사와 함께. 대사·신경.",note:"Thiamax(TTFD)와 함께 티아민 중복 — 의도된 스택인지 확인."},
+   {n:"Thiamax (TTFD)",d:"",badge:["fat"],why:"지용성 티아민(TTFD) — 식사와 함께. 에너지·신경. 각성 가능해 <b>오전·점심</b>.",note:""},
+ ]},
+ {time:"13:00",title:"점심 식사 끝 · 아연 + 위장 보호",color:"--noon",tag:"식후",items:[
+   {n:"Zinc / Copper",d:"",badge:["food"],why:"식후 위장 보호 + 흡수. <b>마그네슘·칼슘과 분리</b>해 이 시간 단독 미네랄.",note:"",change:"이 시간대 마그네슘은 제거(미네랄 경쟁 회피)"},
+   {n:"MSM (+ Vitamin C, Source Naturals)",d:"",badge:["food"],why:"식사와 함께. 관절·피부·항산화.",note:""},
+   {n:"비타민C 1000 (고려은단)",d:"",badge:["food"],why:"수용성 — 언제든 가능. 콜라겐 합성·항산화.",note:"고용량 C는 구리 흡수를 낮출 수 있어 아연/구리와 1시간 간격 또는 아침 분산 권장.",change:"아연/구리와 시간 간격 두기"},
+ ]},
+ {time:"16:00",title:"오후 공복 · 혈전 분해 집중",color:"--after",tag:"공복·단독",items:[
+   {n:"Nattokinase",d:"",badge:["fast","alone"],why:"<b>공복 단독</b> — 소화효소 간섭 없이 효소 활성 최대. 혈전 분해.",note:"오전 심혈관 위험 시간대 대비로 취침 전 복용도 한 가지 옵션.",warn:"은행·오메가-3와 출혈 위험 누적. 항응고제·수술 예정 시 반드시 상담."},
+ ]},
+ {time:"19:30",title:"저녁 식후 · 담즙·간·혈당",color:"--dinner",tag:"식후",items:[
+   {n:"Berberine",d:"",badge:["food"],why:"식사와 함께 — 식후 혈당 완화. 반감기 짧아 끼니마다 분산 가능.",note:"가장 탄수화물 많은 끼니에 맞추면 효과적.",warn:"CYP 약물 상호작용·저혈당 위험 — 처방약 병용 시 상담."},
+   {n:"Ca / Mg (Bluebonnet)",d:"3알",badge:["food"],why:"<b>칼슘 집중 시간</b> — 저녁 흡수. 2:1 복합이라 함께 배합됨.",note:"아연(점심)과 6시간 이상 분리되어 좋음."},
+   {n:"TUDCA + Bitters Blend",d:"",badge:["food","fat"],why:"담즙산 — <b>지방 포함 식사와 함께</b> 지방·지용성 비타민 소화 지원(또는 공복 시 간 지원).",note:""},
+   {n:"Artichoke (Jarrow)",d:"500mg",badge:["food"],why:"담즙 분비·소화 촉진이 주 효능이라 <b>식사와 함께</b>가 합리적.",note:"",change:"취침 → 저녁 식후로 이동"},
+   {n:"Enterotone",d:"",badge:["food"],why:"장 점막·단쇄지방산 지원 — 식사와 함께.",note:""},
+ ]},
+ {time:"22:00",title:"취침 전 · 이완·재생",color:"--night",tag:"취침",items:[
+   {n:"Magnesium (Natural Flow)",d:"2알",badge:["alone"],why:"글리시네이트·타우레이트 — <b>수면·근육 이완</b>. 칼슘(저녁)과 분리됨.",note:"묽은 변 시 용량 조절."},
+   {n:"L-Lysine",d:"",badge:["fast"],why:"가능하면 <b>공복</b>(단백질과 떨어뜨려) 흡수↑.",note:"아르기닌과 경쟁 — 항바이러스 목적이면 공복이 유리."},
+   {n:"CollagenUP",d:"",badge:["alone"],why:"야간 <b>조직 재생</b> 집중. 비타민C와 함께 시 콜라겐 합성 시너지(선택).",note:""},
+ ]},
+];
+
+// ---------- RENDER ----------
+const root=document.getElementById('schedule');
+slots.forEach((s,si)=>{
+  const hasChange=s.items.some(i=>i.change);
+  const hasWarn=s.items.some(i=>i.warn);
+  const slot=document.createElement('div');
+  slot.className='slot open'+(hasChange?' has-change':'')+(hasWarn?' has-warn':'');
+  let itemsHtml=s.items.map((it,ii)=>{
+    const badges=(it.badge||[]).map(b=>`<span class="b ${b}">${F[b]}</span>`).join('');
+    const id=`c${si}_${ii}`;
+    return `<div class="item ${it.change?'is-change':''} ${it.warn?'is-warn':''}">
+      <div class="item-top">
+        <div class="chk" data-id="${id}"></div>
+        <div style="flex:1">
+          <div class="name">${it.n}${it.d?`<span class="dose">${it.d}</span>`:''}</div>
+          <div class="badges">${badges}</div>
+        </div>
+      </div>
+      <div class="why">${it.why}</div>
+      ${it.change?`<div class="change-line">${it.change}</div>`:''}
+      ${it.note?`<div class="note">${it.note}</div>`:''}
+      ${it.warn?`<div class="warn-line">${it.warn}</div>`:''}
+    </div>`;
+  }).join('');
+  slot.innerHTML=`<div class="slot-h">
+      <span class="dot" style="background:var(${s.color})"></span>
+      <span class="time">${s.time}</span>
+      <span class="slot-title">${s.title}</span>
+      <span class="slot-tag">${s.tag}</span>
+      <span class="chev">▶</span>
+    </div>
+    <div class="slot-body">${itemsHtml}</div>`;
+  root.appendChild(slot);
+});
+
+// ---------- INTERACTION ----------
+let store={};
+try{store=JSON.parse(localStorage.getItem('sebinSupp')||'{}')}catch(e){store={}}
+function save(){try{localStorage.setItem('sebinSupp',JSON.stringify(store))}catch(e){}}
+function updateProgress(){
+  const all=document.querySelectorAll('.chk');
+  const on=document.querySelectorAll('.chk.on');
+  const pct=all.length?Math.round(on.length/all.length*100):0;
+  document.getElementById('pct').textContent=pct+'%';
+  document.getElementById('barfill').style.width=pct+'%';
+}
+document.querySelectorAll('.chk').forEach(c=>{
+  const id=c.dataset.id;
+  if(store[id])c.classList.add('on');
+  c.addEventListener('click',e=>{
+    e.stopPropagation();
+    c.classList.toggle('on');
+    store[id]=c.classList.contains('on');save();updateProgress();
+  });
+});
+updateProgress();
+
+document.querySelectorAll('.slot-h').forEach(h=>{
+  h.addEventListener('click',()=>h.parentElement.classList.toggle('open'));
+});
+
+// expand all (default: expanded so everything is visible on mobile)
+let expanded=true;
+document.getElementById('expandAll').textContent='모두 접기';
+document.getElementById('expandAll').addEventListener('click',e=>{
+  expanded=!expanded;
+  document.querySelectorAll('.slot').forEach(s=>s.classList.toggle('open',expanded));
+  e.target.textContent=expanded?'모두 접기':'모두 펼치기';
+});
+
+// reset
+document.getElementById('resetChk').addEventListener('click',()=>{
+  store={};save();
+  document.querySelectorAll('.chk').forEach(c=>c.classList.remove('on'));
+  updateProgress();
+});
+
+// filter modes
+document.querySelectorAll('.btn[data-mode]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.btn[data-mode]').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    const m=b.dataset.mode;
+    root.classList.remove('hideMode','hideWarn');
+    if(m==='change'){root.classList.add('hideMode');document.querySelectorAll('.slot').forEach(s=>s.classList.add('open'))}
+    else if(m==='warn'){root.classList.add('hideWarn');document.querySelectorAll('.slot').forEach(s=>s.classList.add('open'))}
+  });
+});
+</script>
+</body>
+</html>
