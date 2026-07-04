@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>세빈이 영양제 스케줄 (v4 · 조제용 목록 + 근거)</title>
+<title>세빈이 영양제 스케줄 (v5 · 식사패턴 반영)</title>
 <style>
   :root{
     --bg:#0f1420; --card:#1a2030; --card2:#222b3d; --line:#2c3650;
     --text:#e8edf6; --muted:#9aa6bd; --accent:#5db0ff; --accent2:#7ee0c0;
     --warn:#ff8a8a; --warnbg:#3a2230; --change:#ffd36b; --changebg:#3a3420;
     --green:#7ee0a0; --pill:#26314a; --co:#b6f0d8; --cobg:#16302a;
+    --move:#9ecbff; --movebg:#16233a;
     --home:#7ee0c0; --carry:#ffd36b;
     --dawn:#9aa6bd; --morning:#ffcf7a; --noon:#7ed0ff; --dinner:#ff9bb0; --night:#8aa0ff;
   }
@@ -19,10 +20,8 @@
     line-height:1.55;-webkit-font-smoothing:antialiased;padding-bottom:60px}
   .wrap{max-width:920px;margin:0 auto;padding:24px 18px}
   header{text-align:center;padding:18px 0 8px}
-  h1{font-size:23px;margin:0 0 6px;letter-spacing:-.3px}
+  h1{font-size:22px;margin:0 0 6px}
   .sub{color:var(--muted);font-size:13px}
-  .goals{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
-  .goal{background:var(--pill);border:1px solid var(--line);color:var(--accent2);padding:5px 12px;border-radius:20px;font-size:13px}
   .legend{display:flex;gap:10px 14px;flex-wrap:wrap;justify-content:center;margin:8px 0 0;font-size:11.5px;color:var(--muted)}
   .legend span{display:inline-flex;align-items:center;gap:5px}
 
@@ -34,7 +33,6 @@
   .bar{height:8px;background:var(--card2);border-radius:8px;overflow:hidden;margin-top:6px}
   .bar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:.3s}
 
-  /* quicklist */
   .ql{background:var(--card);border:2px solid #2c5a4a;border-radius:16px;padding:16px 18px;margin:16px 0}
   .ql h2{font-size:17px;margin:0 0 4px}
   .ql .qsub{font-size:12px;color:var(--muted);margin:0 0 12px}
@@ -45,7 +43,7 @@
   .qwhere{font-size:11px;font-weight:700;padding:2px 8px;border-radius:7px}
   .qwhere.home{color:#0a0f18;background:var(--home)}
   .qwhere.carry{color:#0a0f18;background:var(--carry)}
-  .qnames{font-size:14px;color:var(--text)}
+  .qnames{font-size:14px}
   .qnames .sep{color:var(--muted)}
   .qform{color:var(--change);font-size:12px}
 
@@ -84,11 +82,13 @@
   .why b{color:var(--accent2)}
   .pair{font-size:12.5px;color:var(--co);background:var(--cobg);border:1px solid #245a4a;border-radius:8px;padding:6px 9px;margin:7px 0 0;overflow-wrap:break-word}
   .pair::before{content:"🔗 함께 ";font-weight:700}
+  .movebox{font-size:12.5px;color:var(--move);background:var(--movebg);border:1px solid #294a6e;border-radius:8px;padding:6px 9px;margin:7px 0 0;overflow-wrap:break-word}
+  .movebox::before{content:"📦 이동 ";font-weight:700}
   .note{font-size:12.5px;color:var(--muted);margin:6px 0 0;overflow-wrap:break-word}
   .warn-line{font-size:12.5px;color:var(--warn);margin:6px 0 0;overflow-wrap:break-word}
   .warn-line::before{content:"⚠️ ";}
   .src{font-size:11.5px;margin:7px 0 0}
-  .src a{color:var(--accent);text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:1px 7px;margin-right:5px;display:inline-block}
+  .src a{color:var(--accent);text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:1px 7px;margin:0 5px 5px 0;display:inline-block}
 
   .section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:18px 0}
   .section h2{font-size:17px;margin:0 0 12px}
@@ -96,7 +96,6 @@
   .section.painbox{border-color:#5a4a2a;background:linear-gradient(180deg,#2a2414,#1a2030)}
   .section.hairbox{border-color:#4a3a5a;background:linear-gradient(180deg,#241a2e,#1a2030)}
   .section.warnbox{border-color:#5a2a3a;background:linear-gradient(180deg,#2a1722,#1a2030)}
-  .section.changebox{border-color:#5a4e24;background:linear-gradient(180deg,#2a2614,#1a2030)}
   .section p{font-size:13.5px;margin:8px 0;overflow-wrap:break-word}
   .rule{font-size:13.5px;margin:8px 0;padding-left:20px;position:relative;overflow-wrap:break-word}
   .rule::before{content:"›";position:absolute;left:4px;color:var(--accent);font-weight:700}
@@ -125,38 +124,34 @@
 <body>
 <div class="wrap">
 <header>
-  <h1>💊 세빈이 영양제 스케줄 <span style="font-size:12px;color:var(--muted)">v4</span></h1>
-  <div class="sub">조제용 이름 목록 + 개별 근거 · 2026-06-24</div>
+  <h1>💊 세빈이 영양제 스케줄 <span style="font-size:12px;color:var(--muted)">v5</span></h1>
+  <div class="sub">식사패턴 반영: 아침 거름 · 점심=주식(첫·기름진 끼니) · 저녁 가벼움(계란+옥수수) · 2026-06-24</div>
   <div class="legend">
-    <span>🏠 집</span><span>🎒 휴대</span><span>🟠 공복</span><span>🔵 식사와</span><span>🟡 지방과</span><span>🟣 단독</span><span>🔗 보조인자</span>
+    <span>🏠 집</span><span>🎒 휴대</span><span>🟠 공복</span><span>🔵 식사와</span><span>🟡 지방과</span><span>🟣 단독</span><span>📦 이동근거</span>
   </div>
 </header>
 
-<!-- ============ 조제용 이름만 ============ -->
 <div class="ql">
   <h2>📋 조제용 빠른 목록 (이름만)</h2>
-  <p class="qsub">15일치 약통 채울 때 이거 보고 넣으세요. <b style="color:var(--change)">가루·액상</b>은 약통에 못 넣으니 따로(집에서). 상세·근거는 아래 카드 참고.</p>
+  <p class="qsub">15일치 약통 채울 때 이것만 보고 넣으세요. <b style="color:var(--change)">가루·액상</b>은 약통에 못 넣으니 집에서 따로. 상세·근거는 아래 카드.</p>
   <div id="quicklist"></div>
 </div>
 
 <div class="section tip">
-  <h2>🎒 실전 요약</h2>
-  <p>휴대(가방)는 <b style="color:var(--accent2)">점심 2종(소화효소·아연)</b>만. 나머지는 집. 지용성·담즙·가루(MSM·Better GI)는 집 저녁으로 모았습니다.</p>
+  <h2>🍽️ 식사패턴에 맞춘 큰 그림</h2>
+  <p><b style="color:var(--accent2)">아침을 안 드시니</b> "아침 식사와 함께" 먹던 것들(B1·지용성·은행)을 <b style="color:var(--accent2)">점심(첫 끼니)으로</b> 옮겼습니다. <b style="color:var(--accent2)">저녁이 가벼워서</b>(계란+옥수수, 저지방) 지방이 필요한 지용성은 저녁에 두지 않았어요 — 흡수가 안 되니까요.</p>
+  <p>결과적으로 <b style="color:var(--accent2)">점심이 가장 커졌습니다.</b> 이게 세빈님 몸에는 가장 맞아요(주식·기름진 끼니). 대신 끼니 전반(식전→시작→중간→끝)에 나눠 드세요. 저녁·취침은 가볍고, 새벽·아침은 공복 소수만.</p>
+  <p style="color:var(--muted);font-size:12.5px">만약 저녁에 <b>올리브유 한 스푼</b>이라도 곁들이는 날이면, 지용성 일부를 저녁으로 나눠도 됩니다 — 원하면 그 버전도 만들어 드려요.</p>
 </div>
 
 <div class="section painbox">
-  <h2>🔗 핵심 — B1(TTFD)은 "마그네슘과 함께, 아침에"</h2>
-  <p>TTFD는 <b style="color:var(--change)">마그네슘이 있어야 활성형 TPP로 전환</b>됩니다. Overton·제조사 모두 "Mg 200–400mg + B-콤플렉스와 함께, 아침에, 오후·저녁 금지"를 명시. 커피·차는 1h 전/2h 후 피하기. ([근거](https://hormonesmatter.com/why-thiamine-supplementation-requires-magnesium/))</p>
-</div>
-
-<div class="section painbox">
-  <h2>🤢 아연 위장통증 / 😵 어지러움</h2>
-  <p><b>아연</b> = 든든한 단백질 식사 끝물에만, 부실하면 거르기. <b>어지러움</b> = 대개 저혈당(R-ALA·베르베린) → 음식과 함께, 어지러우면 당분 섭취.</p>
+  <h2>😵 어지러움·저혈당 — 이번에 크게 개선</h2>
+  <p><b>R-ALA를 아침 공복 → 점심 직전(식전 30분)</b>으로 옮겼습니다. 아침을 안 드시는데 공복에 R-ALA를 먹으면 <b style="color:var(--change)">혈당이 떨어져 어지러울</b> 수 있어서, 식사가 곧 오는 점심 직전이 안전합니다. 베르베린도 탄수화물이 있는 점심에 둬서 저혈당 위험을 낮췄어요.</p>
 </div>
 
 <div class="toolbar">
   <button class="btn active" data-mode="all">전체 보기</button>
-  <button class="btn" data-mode="change">⭐ 변경/보조인자</button>
+  <button class="btn" data-mode="change">📦 이동/보조인자만</button>
   <button class="btn" data-mode="warn">⚠️ 주의점만</button>
   <button class="btn" id="expandAll">모두 펼치기</button>
   <button class="btn" id="resetChk">체크 초기화</button>
@@ -167,35 +162,24 @@
 
 <div id="schedule"></div>
 
-<!-- ============ 탈모 메모 ============ -->
 <div class="section hairbox">
-  <h2>💇 탈모 메모 (Nutrafol 관련)</h2>
-  <p>이 루틴이면 <b style="color:#d9b6ff">영양 결핍성 탈모는 사실상 배제</b>됩니다. 즉 원인이 영양이 아닐 가능성이 커서, 보충제(Nutrafol 포함)로는 잘 안 잡힙니다.</p>
-  <p><b>Nutrafol:</b> 임상 데이터가 있으나 대부분 자사 후원·소규모로 효과가 modest, 반응이 갈림. <b style="color:#d9b6ff">사놓은 것 소진 후 중단해도 무방</b>(보충제라 반동 탈모 없음). ([리뷰](https://www.healthline.com/health/nutrafol-reviews))</p>
-  <p><b>실제로 효과 있는 것(처방, 피부과):</b> 국소 미녹시딜(여성형 유일 FDA 승인, 6–12개월에 46–68% 반응), 저용량 경구 미녹시딜, 안드로겐형이면 스피로노락톤(미녹시딜과 시너지), 미세침. ([2025 정리](https://www.besthairregrowth.com/articles/female-pattern-hair-loss-treatments-usa))</p>
-  <p><b>확인할 검사:</b> 페리틴(철저장 — 이 루틴에 철분이 없음, 여성 탈모 흔한 원인), 갑상선(TSH), 비타민D, 안드로겐 호르몬.</p>
-  <p style="color:var(--muted);font-size:12.5px">주의: <b style="color:#d9b6ff">셀레늄·비타민A는 과잉이면 오히려 탈모</b> 유발. 글루타치온 복합에 셀레늄이 있으니 추가로 더 얹지 말 것.</p>
-</div>
-
-<div class="section changebox">
-  <h2>⭐ v4 변경</h2>
-  <div class="rule"><b>맨 위에 "조제용 이름만" 목록</b> 추가 — 15일치 약통 채울 때용.</div>
-  <div class="rule"><b>MSM(가루) → 저녁(집)</b>으로 이동 — 휴대 불가, 저녁 복용 문제없음.</div>
-  <div class="rule"><b>Better GI·Gutmax 복원</b> — v3에서 누락됐던 항목(중단했으면 알려주세요).</div>
-  <div class="rule"><b>탈모 메모</b> 추가, Nutrafol은 소진 후 중단 방향.</div>
+  <h2>💇 탈모 메모 (Nutrafol)</h2>
+  <p>이 루틴이면 결핍성 탈모는 배제 → 원인이 영양이 아닐 가능성. <b style="color:#d9b6ff">Nutrafol은 소진 후 중단</b> 방향(효과 modest). 실제 효과는 미녹시딜·스피로노락톤(피부과), 검사는 페리틴·갑상선·비타민D·안드로겐. 셀레늄·비타민A 과잉은 오히려 탈모 유발 주의.</p>
+  <p class="src"><a href="https://www.besthairregrowth.com/articles/female-pattern-hair-loss-treatments-usa" target="_blank" rel="noopener">📄 2025 치료 정리</a><a href="https://www.healthline.com/health/nutrafol-reviews" target="_blank" rel="noopener">📄 Nutrafol 리뷰</a></p>
 </div>
 
 <div class="section warnbox">
   <h2>⚠️ 안전·중복 경고</h2>
-  <div class="wrule"><b>티아민 3중(의도된 고용량):</b> Thiamax + Thiactive B(이미 TTFD·벤포 함유) + Benfotiamine. 고용량 의도라면 OK — <b>마그네슘 동반 필수</b>.</div>
-  <div class="wrule"><b>Nutrafol 중복:</b> 아스타잔틴·콜라겐 함유 → 별도 제품과 이중. (탈모 메모대로 소진 후 중단 예정)</div>
-  <div class="wrule"><b>출혈 스택:</b> 나토키나제+은행+오메가-3 항혈소판 누적. 항응고제·수술 시 의사 상담.</div>
-  <div class="wrule"><b>저혈당:</b> R-ALA·베르베린 음식과 함께. <b>미네랄 분리:</b> 아연·칼슘·마그네슘 2–3h, 갑상선약 4h.</div>
-  <div class="wrule"><b>Enterotone:</b> 항콜린제·치매약과 병용 금지, 주기적으로. <b>TUDCA·아티초크:</b> 담석 시 금기.</div>
+  <div class="wrule"><b>점심 미네랄:</b> 아연과 마그네슘이 같은 점심 → 마그네슘은 식사 시작, 아연은 식사 끝물로 분리(경쟁 완화). R-ALA(식전)도 미네랄 킬레이트하니 식사와 30분+ 간격.</div>
+  <div class="wrule"><b>티아민 3중(의도된 고용량):</b> Thiamax+Thiactive B+Benfotiamine. 마그네슘 동반 필수, 오후·저녁 금지.</div>
+  <div class="wrule"><b>출혈 스택:</b> 나토키나제+은행+오메가-3. 항응고제·수술 시 의사 상담.</div>
+  <div class="wrule"><b>저혈당:</b> R-ALA·베르베린 — 음식과 함께, 혈당약 병용 시 모니터링.</div>
+  <div class="wrule"><b>마그네슘 총량:</b> 점심(보조인자)+저녁 Ca/Mg+취침 = 3곳. 묽은 변 시 감량.</div>
+  <div class="wrule"><b>Enterotone 제외됨(v3)·PC·Gutmax 제거(재고 없음).</b> Enterotone은 원하면 다시 넣어드립니다(항콜린제 병용 금지).</div>
 </div>
 
 <p class="disclaimer">
-  일반 정보 정리이며 <b>의학적 조언이 아닙니다</b>. 변경·중단 전 의사·약사와 상의하세요. 항응고제·혈당약·갑상선약·항콜린제 복용 시 특히 필요합니다.
+  일반 정보 정리이며 <b>의학적 조언이 아닙니다</b>. 변경·중단 전 의사·약사와 상의하세요. R-ALA·베르베린은 혈당을 낮추므로 혈당약 복용 시 특히 필요합니다.
 </p>
 </div>
 
@@ -203,50 +187,45 @@
 const F={fast:'🟠 공복',food:'🔵 식사와',fat:'🟡 지방과',alone:'🟣 단독',water:'🟢 물과'};
 const slots=[
  {time:"05:00",title:"기상 직후 · 장 해독 바인더",where:"home",color:"--dawn",intro:"집. 물 한 컵, 복용 후 10분 휴식.",items:[
-   {n:"GI Detox",d:"2캡슐",badge:["water"],why:"흡착 바인더 — 빈속에. <b>다른 모든 것과 2시간 분리</b>(이 새벽 타임이 그 역할).",src:[["바인더 분리","https://drcrista.com/blogs/news/timing-of-non-food-based-binders"]]},
+   {n:"GI Detox",d:"2캡슐",badge:["water"],why:"흡착 바인더 — 빈속. <b>다른 모든 것과 2시간 분리</b>.",src:[["📄 바인더 분리","https://drcrista.com/blogs/news/timing-of-non-food-based-binders"]]},
  ]},
- {time:"아침 ①",title:"기상 후 공복 · 식사 전",where:"home",color:"--morning",intro:"집. 빈속. R-ALA 먼저, 아침식사(②)는 30~60분 뒤.",items:[
-   {n:"R-ALA",d:"600mg",badge:["fast","alone"],why:"공복 흡수↑. <b>미네랄을 킬레이트</b>하니 단독으로, 아침 마그네슘보다 먼저.",warn:"혈당 저하 — 어지러우면 몇 입 먹고, 혈당약 병용 시 모니터링.",src:[["Examine","https://examine.com/supplements/alpha-lipoic-acid/"]]},
-   {n:"Glutathione NACET",d:"",badge:["fast"],why:"아세틸화라 위산에 안정 — 공복/식사 무관, 아침 권장.",src:[["제조사","https://www.objectivenutrients.com/products/glutathione-nacet-complex/"]]},
-   {n:"NMNH (MAAC10)",d:"250mg",badge:["fast"],why:"NAD+ <b>아침 정점</b> — 아침 복용, 저녁은 수면 교란 가능.",src:[["타이밍","https://masi.eu/en-usd/blogs/longevity-news/morning-vs-evening-best-time-for-nmn-supplements"]]},
-   {n:"Biocidin LSF",d:"",form:"액상·설하",badge:["fast"],why:"리포좀 액상 — 아침식사 <b>10분 전 설하</b>. (약통 불가, 집에서)",src:[["사용법","https://biocidin.com/pages/biocidin%C2%AE-lsf-suggested-usage-and-ingredients"]]},
+ {time:"아침",title:"기상 후 공복 (아침 식사 없음)",where:"home",color:"--morning",intro:"집. 빈속. 혈당 낮추는 R-ALA는 여기서 뺐고(점심 직전으로), 여기 3종은 저혈당 걱정 없는 것들.",items:[
+   {n:"NMNH (MAAC10)",d:"250mg",badge:["fast"],why:"NAD+ <b>아침 정점</b> — 아침 복용. 혈당에 영향 없어 공복 OK.",src:[["📄 타이밍","https://masi.eu/en-usd/blogs/longevity-news/morning-vs-evening-best-time-for-nmn-supplements"]]},
+   {n:"Glutathione NACET",d:"",badge:["fast"],why:"아세틸화라 위산에 안정 — 공복 OK, 아침 권장.",src:[["📄 제조사","https://www.objectivenutrients.com/products/glutathione-nacet-complex/"]]},
+   {n:"Biocidin LSF",d:"",form:"액상·설하",badge:["fast"],why:"리포좀 액상 — 빈속 설하. (약통 불가, 집에서)",src:[["📄 사용법","https://biocidin.com/pages/biocidin%C2%AE-lsf-suggested-usage-and-ingredients"]]},
  ]},
- {time:"아침 ②",title:"아침 식사와 함께 · B1+마그네슘 핵심",where:"home",color:"--morning",intro:"집. 식사와. 커피·차는 1h 전/2h 후 피하기.",items:[
-   {n:"Thiamax (TTFD)",d:"",badge:["food"],why:"활성 티아민(뇌까지). <b>아침에만</b> — 오후·저녁 수면 방해.",pair:"마그네슘 200–400mg + B-콤플렉스 (활성화 필수).",warn:"커피·차 1h 전/2h 후 금지. 저용량부터.",src:[["Overton","https://hormonesmatter.com/why-thiamine-supplementation-requires-magnesium/"],["제조사","https://www.objectivenutrients.com/products/thiamax/"]]},
-   {n:"Thiactive B",d:"",badge:["food"],why:"활성 B군. 오전 에너지. 오후·저녁 금지(TTFD 함유).",note:"이미 TTFD·벤포 함유 — 티아민 중복(의도된 고용량).",src:[["제조사","https://www.objectivenutrients.com/products/thiactive-b/"]]},
-   {n:"Benfotiamine",d:"",badge:["food","fat"],why:"지용성 티아민(말초·신경). 아침, 지방과.",src:[["타이밍","https://biologyinsights.com/how-to-take-benfotiamine-dosage-timing-and-safety/"]]},
-   {n:"Magnesium (Natural Flow)",d:"1알",badge:["food"],why:"<b>이 그룹 핵심 보조인자</b> — 티아민·비타민D 활성화. (취침분과 총량 관리)",pair:"위 티아민 3종과 반드시 함께.",src:[["Mg×비타민D","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3854088/"]]},
-   {n:"CoQ10",d:"",badge:["fat"],why:"지용성 — 지방과(흡수 최대 3배). 각성 가능해 아침·낮.",src:[["LifeExtension","https://www.lifeextension.com/wellness/supplements/when-take-coq10"]]},
-   {n:"Ginkgo (은행)",d:"",badge:["food","fat"],why:"인지·순환 — 아침·이른 오후, 식사와.",warn:"항혈소판 — 나토키나제·오메가-3와 출혈 위험 누적.",src:[["상호작용","https://www.goodrx.com/well-being/supplements-herbs/ginkgo-biloba-interactions"]]},
+ {time:"점심",title:"점심 — 주식·첫 끼니·가장 기름진 끼니 (핵심)",where:"carry",color:"--noon",intro:"휴대. 끼니 전반에 나눠서: 식전 → 시작 → 식사 중(지방과) → 끝물(아연).",items:[
+   {n:"R-ALA",d:"600mg",badge:["fast","alone"],step:"식전 30분",why:"식전 빈속 흡수↑. <b>아침 공복 대신 점심 직전</b>으로 옮겨 저혈당·어지럼 방지.",move:"아침 공복 → 점심 직전(식전 30분). 아침 결식 시 공복 R-ALA는 혈당 저하 위험.",warn:"미네랄 킬레이트 — 식사(아연·Mg)와 30분+ 간격. 어지러우면 당분.",src:[["📄 ALA 저혈당","https://pmc.ncbi.nlm.nih.gov/articles/PMC12236385/"],["💬 Reddit","https://www.reddit.com/r/Supplements/comments/15pqnw0/alpha_lipoic_acid_is_dangerous/"]]},
+   {n:"Artichoke (Jarrow)",d:"500mg",badge:["food"],step:"식전 15–30분",why:"담즙 촉진 — 가장 기름진 끼니(점심) 식전.",move:"저녁 → 점심. 저녁이 저지방(계란+옥수수)이라 담즙계는 기름진 점심으로.",warn:"담석·담도 폐색 시 금기.",src:[["📄 담즙·지방소화","https://bodybio.com/blogs/blog/tudca-vs-ox-bile-liver-health"],["💬 Reddit","https://www.reddit.com/r/Supplements/comments/1didfh8/digestion_with_betaine_hcl_bitters_and_tudca/"]]},
+   {n:"TUDCA + Bitters",d:"",badge:["food","fat"],step:"식사 초반",why:"담즙산 — 지방(점심)과 함께 지방·지용성 소화.",move:"저녁 → 점심(기름진 끼니).",warn:"담석·담도 폐색 시 금기.",src:[["📄 제조사","https://www.objectivenutrients.com/products/tudca-bitters/"],["💬 Reddit","https://www.reddit.com/r/Supplements/comments/1didfh8/digestion_with_betaine_hcl_bitters_and_tudca/"]]},
+   {n:"MassZymes (소화효소)",d:"",badge:["food"],step:"식사 시작",why:"단백질·지방 소화 지원 — 식사와.",src:[["📄 제조사","https://support.bioptimizers.com/portal/en/kb/articles/should-i-take-masszymes-on-an-empty-stomach-or-with-food-17-12-2018"]]},
+   {n:"Magnesium (Natural Flow)",d:"1알",badge:["food"],step:"식사 시작",why:"<b>TTFD 활성화 필수 보조인자</b>. 아연과 분리 위해 식사 시작에.",pair:"아래 티아민 3종과 함께(활성화).",src:[["📄 Mg×비타민D","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3854088/"]]},
+   {n:"Thiamax (TTFD)",d:"",badge:["food"],step:"식사 중",why:"활성 티아민(뇌까지). <b>점심(첫 끼니)이면 미드데이라 OK</b> — 오후·저녁만 피하면 됨.",move:"아침 식사 그룹 → 점심. 아침 결식 반영. 미드데이 복용은 수면 안전 구간.",pair:"마그네슘(위) + B-콤플렉스.",warn:"커피·차 1h 전/2h 후 금지.",src:[["📄 TTFD 각성/수면","https://www.sciencedirect.com/science/article/pii/S188065462400982X"],["💬 Reddit","https://www.reddit.com/r/Nootropics/comments/uf9w2z/thiamine_allithiamine_ttfd_experiences/"]]},
+   {n:"Thiactive B",d:"",badge:["food"],step:"식사 중",why:"활성 B군 — 점심(미드데이). 오후·저녁 금지(TTFD 함유).",move:"아침 → 점심(아침 결식).",note:"TTFD·벤포 함유 — 티아민 중복(의도).",src:[["📄 제조사","https://www.objectivenutrients.com/products/thiactive-b/"]]},
+   {n:"Benfotiamine",d:"",badge:["food","fat"],step:"식사 중",why:"지용성 티아민 — 점심 식사와.",move:"아침 → 점심.",src:[["📄 타이밍","https://biologyinsights.com/how-to-take-benfotiamine-dosage-timing-and-safety/"]]},
+   {n:"Ubiquinol (CoQ10)",d:"",badge:["fat"],step:"식사 중",why:"지용성 — <b>지방과 함께</b> 흡수↑(공복 대비 큼). 각성 가능해 낮에.",move:"아침 → 점심(기름진 끼니). 저녁 저지방이라 흡수 불리.",note:"현재 재고 없음, 곧 입고 예정 — 자리 유지.",src:[["📄 CoQ10 흡수","https://www.ncbi.nlm.nih.gov/books/NBK531491/"],["💬 Reddit","https://www.reddit.com/r/cfs/comments/16lv57p/question_for_coq10ubiquinol_users/"]]},
+   {n:"Astaxanthin",d:"12mg",badge:["fat"],step:"식사 중",why:"지용성 — <b>지방과 함께 흡수 약 3.7–4.8배</b>. 저녁 저지방이면 낭비.",move:"저녁 → 점심(기름진 끼니).",note:"Nutrafol에 함유 — 총량 확인.",src:[["📄 지질 흡수 3.7배","https://www.sciencedirect.com/science/article/abs/pii/S0928098703001350"],["💬 Reddit","https://www.reddit.com/r/cfs/comments/1h2557g/astaxanthin_bioavailability_hack/"]]},
+   {n:"Vitamin K2 (MK-7)",d:"100mcg",badge:["fat"],step:"식사 중",why:"지용성 — 지방과. 반감기 ~3일이라 유연.",move:"저녁 → 점심(지방 필요).",pair:"저녁 칼슘과 협력(K2가 칼슘을 뼈로).",src:[["📄 지용성×지방","https://clinicaltrials.gov/study/NCT01508845"],["💬 Reddit","https://www.reddit.com/r/Supplements/comments/1lgkjax/are_vitamins_still_effective_without_taking_them/"]]},
+   {n:"Omega-3 + Olive Oil",d:"",badge:["fat"],step:"식사 중",why:"지방과 함께 흡수 <b>~20%→60%</b>. 저녁 저지방이면 손해.",move:"저녁 → 점심(기름진 끼니).",src:[["📄 지방식 흡수","https://www.consumerlab.com/answers/is-it-true-that-fish-oil-is-better-absorbed-when-taken-with-a-fatty-meal/fish-oil-absorption/"],["💬 Reddit","https://www.reddit.com/r/nutrition/comments/1qeewld/ive_been_taking_omega_3_supplements_on_an_empty/"]]},
+   {n:"Ginkgo (은행)",d:"",badge:["food","fat"],step:"식사 중",why:"인지·순환 — 식사와, <b>미드데이까지</b>(늦은 시간 수면 방해).",move:"아침 → 점심(식사와, 낮 시간대 유지).",warn:"항혈소판 — 나토키나제·오메가-3와 출혈 위험 누적.",src:[["📄 타이밍","https://biologyinsights.com/when-to-take-ginkgo-biloba-morning-or-night/"],["💬 Reddit","https://www.reddit.com/r/Supplements/comments/eqllez/ginkgo_biloba_dose_timing_question_insomnia/"]]},
+   {n:"Nutrafol",d:"4캡슐",badge:["fat"],step:"식사 중",why:"1일 4캡슐, 식사와(지용성). 모발.",note:"소진 후 중단 방향(탈모 메모). 아스타잔틴·콜라겐 중복.",src:[["📄 제조사","https://nutrafol.com/women-balance/"]]},
+   {n:"Berberine",d:"",badge:["food"],step:"식사 시작",why:"<b>탄수화물 많은 끼니(점심) 시작에</b> — 식후 혈당 완화. 반감기 짧아 실제 탄수 끼니와 맞춰야 함.",move:"저녁 → 점심. 저녁은 저탄수(계란+옥수수)라 효과 적고 저혈당 위험.",warn:"CYP3A4 억제·저혈당 — 처방약 병용 시 상담.",src:[["📄 T2D 시험","https://pmc.ncbi.nlm.nih.gov/articles/PMC2410097/"],["💬 Reddit","https://www.reddit.com/r/lowcarb/comments/11yod20/using_berberine_to_offset_occasional_splurge/"]]},
+   {n:"Zinc / Copper",d:"",badge:["food"],step:"식사 끝물",why:"<b>든든한 단백질 식사(점심) 끝물에.</b> 부실하면 거르기. 마그네슘(식사 시작)과 분리, 칼슘(저녁)과 분리.",warn:"빈속·부실한 식사 금물 — 위장통증 원인.",src:[["📄 아연 위장","https://ubiehealth.com/doctors-note/nausea-taking-zinc-empty-stomach-fasting-causes-4242e1"],["💬 Reddit Zn·Mg","https://www.reddit.com/r/Supplements/comments/1s0fom0/learned_the_hard_way_that_timing_matters_as_much/"]]},
  ]},
- {time:"점심",title:"점심 — 휴대 팩",where:"carry",color:"--noon",intro:"이것만 들고 나가세요. 아연은 든든한 식사 끝물.",items:[
-   {n:"MassZymes (소화효소)",d:"",badge:["food"],why:"소화 목적이면 식사와 함께(15분 전~식사 중).",src:[["제조사","https://support.bioptimizers.com/portal/en/kb/articles/should-i-take-masszymes-on-an-empty-stomach-or-with-food-17-12-2018"]]},
-   {n:"Zinc / Copper",d:"",badge:["food"],step:"식사 끝물",why:"<b>든든한 단백질 식사 끝물에만.</b> 부실하면 거르기. 칼슘(저녁)·R-ALA(아침)와 분리됨.",warn:"빈속·부실한 식사 금물 — 위장통증 원인.",src:[["아연 위장","https://ubiehealth.com/doctors-note/nausea-taking-zinc-empty-stomach-fasting-causes-4242e1"]]},
- ]},
- {time:"저녁",title:"저녁 식사 · 지용성·담즙·칼슘·혈당·장",where:"home",color:"--dinner",intro:"집. 지방 있는 저녁과 함께. 담즙계는 식전. 가루는 물에 타서.",items:[
-   {n:"Artichoke (Jarrow)",d:"500mg",badge:["food"],step:"식전 15–30분",why:"담즙 분비 촉진 — 식전이 지방 소화에 유리.",warn:"담석·담도 폐색 시 금기.",src:[["아티초크","https://www.herbalreality.com/herb/artichoke/"]]},
-   {n:"TUDCA + Bitters",d:"",badge:["food","fat"],step:"식전~식사",why:"담즙산 — 지방 식사와 함께 소화 지원.",warn:"담석·담도 폐색 시 금기.",src:[["제조사","https://www.objectivenutrients.com/products/tudca-bitters/"]]},
-   {n:"Omega-3 + Olive Oil",d:"",badge:["fat"],why:"지방 자체 + 지용성 흡수 매개. 가장 지방 많은 끼니와.",src:[["Mayo","https://www.mayoclinic.org/drugs-supplements-fish-oil/art-20364810"]]},
-   {n:"Astaxanthin",d:"12mg",badge:["fat"],why:"지용성 — 지방 10–15g↑과 흡수 3–10배.",note:"Nutrafol에 함유 — 총량 확인.",src:[["생체이용률","https://pmc.ncbi.nlm.nih.gov/articles/PMC6396763/"]]},
-   {n:"PC (포스파티딜콜린)",d:"",badge:["fat"],why:"인지질 — 지방과. 세포막·콜린.",src:[["PeaceHealth","https://www.peacehealth.org/medical-topics/id/hn-2873001"]]},
-   {n:"Nutrafol",d:"4캡슐",badge:["fat"],why:"1일 4캡슐, 식사와. 모발.",note:"효과 modest — 소진 후 중단 방향(탈모 메모 참고). 아스타잔틴·콜라겐 중복.",src:[["리뷰","https://www.healthline.com/health/nutrafol-reviews"]]},
-   {n:"Vitamin K2 (MK-7)",d:"100mcg",badge:["fat"],why:"지용성 — 지방과. 반감기 ~3일.",pair:"칼슘과 — K2가 칼슘을 뼈로 유도.",src:[["D3·K2","https://www.lifeextension.com/wellness/vitamins/vitamin-d3-and-k2"]]},
-   {n:"Ca / Mg (Bluebonnet)",d:"3알",badge:["food"],why:"칼슘 1회 ~500mg만 흡수 → 저녁에. 아연과 6h 분리.",warn:"갑상선약과 4시간 분리.",src:[["Ca·갑상선약","https://pillo.care/blog/calcium-and-levothyroxine"]]},
-   {n:"Berberine",d:"",badge:["food"],why:"식사와 — 식후 혈당 완화.",warn:"CYP3A4 억제·저혈당 — 처방약 병용 시 상담.",src:[["CYP","https://pmc.ncbi.nlm.nih.gov/articles/PMC4898966/"]]},
-   {n:"비타민C 1000",d:"",badge:["food"],why:"콜라겐 합성 보조. 아연과 다른 끼니(저녁)로 구리 영향 회피.",src:[["복용법","https://biologyinsights.com/best-way-to-take-vitamin-c-dose-timing-and-form/"]]},
-   {n:"MSM",d:"",form:"가루",badge:["food"],why:"관절·피부·항산화. <b>가루라 휴대 불가 → 저녁(집) 복용 OK.</b> 각성감 있으면 더 일찍.",note:"취침 직전만 아니면 문제없음.",src:[["MSM 타이밍","https://www.performancelab.com/blogs/joint-support/taking-msm-before-bed"]]},
-   {n:"Better GI",d:"2스쿱",form:"가루",badge:["food"],why:"장 점막 복원(IgG+아연카르노신). 물에 타서, 집에서. 타이밍 유연.",src:[["제조사","https://www.objectivenutrients.com/products/better-gi/"]]},
-   {n:"Gutmax",d:"",badge:["food"],why:"장 건강 지원 — 식사와 함께. (Better GI와 병용)",src:[["BiOptimizers","https://bioptimizers.com/"]]},
+ {time:"저녁",title:"저녁 — 가벼운 식사(계란+옥수수) · 저지방",where:"home",color:"--dinner",intro:"집. 지방 필요한 건 여기 없음. 가루(MSM·Better GI)는 물에 타서.",items:[
+   {n:"Ca / Mg (Bluebonnet)",d:"3알",badge:["food"],why:"칼슘은 저녁·1회 ~500mg. 아연(점심)과 6h 분리. 저지방 저녁이라도 칼슘은 지방 불필요.",warn:"갑상선약과 4시간 분리. 저녁 거르면 다음 든든한 끼니로.",src:[["📄 Ca·갑상선약","https://pillo.care/blog/calcium-and-levothyroxine"]]},
+   {n:"비타민C 1000",d:"",badge:["food"],why:"콜라겐 합성 보조. <b>아연과 다른 끼니(저녁)</b>로 구리 영향 회피.",src:[["📄 복용법","https://biologyinsights.com/best-way-to-take-vitamin-c-dose-timing-and-form/"]]},
+   {n:"MSM",d:"",form:"가루",badge:["food"],why:"관절·피부. <b>가루라 휴대 불가 → 저녁(집).</b> 취침 직전만 아니면 OK.",src:[["📄 타이밍","https://www.performancelab.com/blogs/joint-support/taking-msm-before-bed"]]},
+   {n:"Better GI",d:"2스쿱",form:"가루",badge:["food"],why:"장 점막 복원(IgG+아연카르노신). 물에 타서, 집. 타이밍 유연.",src:[["📄 제조사","https://www.objectivenutrients.com/products/better-gi/"]]},
  ]},
  {time:"취침",title:"취침 전 · 혈전분해·이완·재생",where:"home",color:"--night",intro:"집. 저녁 식사 2시간 후(빈속).",items:[
-   {n:"Nattokinase",d:"",badge:["fast","alone"],why:"<b>빈속</b>(저녁 2h 후). 취침 복용이 오전 혈전 위험(PAI-1 정점) 대비에 유리.",warn:"은행·오메가-3와 출혈 위험 누적. 수술 1–2주 전 중단.",src:[["타이밍","https://tokuhealth.com/a/blog/best-time-to-take-nattokinase"]]},
-   {n:"Magnesium (Natural Flow)",d:"2알",badge:["alone"],why:"글리시네이트·타우레이트 — 수면·근육 이완. 칼슘과 분리.",note:"아침분 + 저녁 Ca/Mg와 합산해 총량 관리(묽은 변 시 감량).",src:[["수면 Mg","https://www.mitoq.com/blogs/journal/best-time-to-take-magnesium-for-sleep-and-stress-relief"]]},
-   {n:"L-Lysine",d:"",badge:["fast"],why:"빈속(단백질·아르기닌과 떨어뜨려) 흡수·효과↑.",src:[["라이신·아르기닌","https://empowervida.com/blog/lysine-and-arginine-take-together-physician-guide/"]]},
-   {n:"CollagenUP",d:"",badge:["alone"],why:"조직 재생. <b>비타민C와 시너지</b>(합성 보조인자).",note:"Nutrafol에 콜라겐 함유 — 중복 확인.",src:[["콜라겐+C","https://fiteg2.com/blogs/news/vitamin-c-and-collagen-why-should-they-be-taken-together"]]},
+   {n:"Nattokinase",d:"",badge:["fast","alone"],why:"<b>빈속</b>(저녁 2h 후). 취침 복용이 오전 혈전 위험 대비에 유리.",warn:"은행·오메가-3와 출혈 위험 누적. 수술 1–2주 전 중단.",src:[["📄 타이밍","https://tokuhealth.com/a/blog/best-time-to-take-nattokinase"]]},
+   {n:"Magnesium (Natural Flow)",d:"2알",badge:["alone"],why:"글리시네이트·타우레이트 — 수면·근육 이완. 칼슘과 분리.",note:"점심분+저녁 Ca/Mg와 총량 관리(묽은 변 시 감량).",src:[["📄 수면 Mg","https://www.mitoq.com/blogs/journal/best-time-to-take-magnesium-for-sleep-and-stress-relief"]]},
+   {n:"L-Lysine",d:"",badge:["fast"],why:"빈속(단백질·아르기닌과 분리) 흡수↑.",src:[["📄 라이신","https://empowervida.com/blog/lysine-and-arginine-take-together-physician-guide/"]]},
+   {n:"CollagenUP",d:"",badge:["alone"],why:"조직 재생. 비타민C(저녁)와 시너지.",note:"Nutrafol에 콜라겐 함유 — 중복 확인.",src:[["📄 콜라겐+C","https://fiteg2.com/blogs/news/vitamin-c-and-collagen-why-should-they-be-taken-together"]]},
  ]},
 ];
 
-// quicklist (names only)
 const ql=document.getElementById('quicklist');
 slots.forEach(s=>{
   const whereLabel=s.where==='carry'?'🎒 휴대':'🏠 집';
@@ -255,16 +234,12 @@ slots.forEach(s=>{
     return `<span>${it.n}${it.d?` ${it.d}`:''}${f}</span>`;
   }).join('<span class="sep"> · </span>');
   ql.insertAdjacentHTML('beforeend',
-    `<div class="qrow">
-       <div class="qhead"><span class="qtime">${s.time}</span><span class="qwhere ${s.where}">${whereLabel}</span></div>
-       <div class="qnames">${names}</div>
-     </div>`);
+    `<div class="qrow"><div class="qhead"><span class="qtime">${s.time}</span><span class="qwhere ${s.where}">${whereLabel}</span></div><div class="qnames">${names}</div></div>`);
 });
 
-// detailed schedule
 const root=document.getElementById('schedule');
 slots.forEach((s,si)=>{
-  const hasChange=s.items.some(i=>i.change||i.pair);
+  const hasChange=s.items.some(i=>i.move||i.pair);
   const hasWarn=s.items.some(i=>i.warn);
   const slot=document.createElement('div');
   slot.className='slot open'+(hasChange?' has-change':'')+(hasWarn?' has-warn':'');
@@ -274,8 +249,8 @@ slots.forEach((s,si)=>{
     const id=`c${si}_${ii}`;
     const stepHtml=it.step?`<span class="step">${it.step}</span>`:'';
     const formTag=it.form?`<span class="formtag">${it.form}</span>`:'';
-    const srcHtml=(it.src||[]).map(x=>`<a href="${x[1]}" target="_blank" rel="noopener">📚 ${x[0]}</a>`).join('');
-    return `<div class="item ${(it.change||it.pair)?'is-change':''} ${it.warn?'is-warn':''}">
+    const srcHtml=(it.src||[]).map(x=>`<a href="${x[1]}" target="_blank" rel="noopener">${x[0]}</a>`).join('');
+    return `<div class="item ${(it.move||it.pair)?'is-change':''} ${it.warn?'is-warn':''}">
       <div class="item-top">
         <div class="chk" data-id="${id}"></div>
         <div style="flex:1">
@@ -284,62 +259,44 @@ slots.forEach((s,si)=>{
         </div>
       </div>
       <div class="why">${it.why}</div>
+      ${it.move?`<div class="movebox">${it.move}</div>`:''}
       ${it.pair?`<div class="pair">${it.pair}</div>`:''}
       ${it.note?`<div class="note">${it.note}</div>`:''}
       ${it.warn?`<div class="warn-line">${it.warn}</div>`:''}
       ${srcHtml?`<div class="src">${srcHtml}</div>`:''}
     </div>`;
   }).join('');
-  slot.innerHTML=`<div class="slot-h">
-      <span class="dot" style="background:var(${s.color})"></span>
-      <span class="time">${s.time}</span>
-      <span class="slot-title">${s.title}</span>
-      <span class="where ${s.where}">${whereLabel}</span>
-      <span class="chev">▶</span>
-    </div>
-    <div class="slot-body"><div class="slot-intro">${s.intro}</div>${itemsHtml}</div>`;
+  slot.innerHTML=`<div class="slot-h"><span class="dot" style="background:var(${s.color})"></span><span class="time">${s.time}</span><span class="slot-title">${s.title}</span><span class="where ${s.where}">${whereLabel}</span><span class="chev">▶</span></div><div class="slot-body"><div class="slot-intro">${s.intro}</div>${itemsHtml}</div>`;
   root.appendChild(slot);
 });
 
 let store={};
-try{store=JSON.parse(localStorage.getItem('sebinSupp4')||'{}')}catch(e){store={}}
-function save(){try{localStorage.setItem('sebinSupp4',JSON.stringify(store))}catch(e){}}
+try{store=JSON.parse(localStorage.getItem('sebinSupp5')||'{}')}catch(e){store={}}
+function save(){try{localStorage.setItem('sebinSupp5',JSON.stringify(store))}catch(e){}}
 function updateProgress(){
-  const all=document.querySelectorAll('.chk');
-  const on=document.querySelectorAll('.chk.on');
+  const all=document.querySelectorAll('.chk');const on=document.querySelectorAll('.chk.on');
   const pct=all.length?Math.round(on.length/all.length*100):0;
-  document.getElementById('pct').textContent=pct+'%';
-  document.getElementById('barfill').style.width=pct+'%';
+  document.getElementById('pct').textContent=pct+'%';document.getElementById('barfill').style.width=pct+'%';
 }
 document.querySelectorAll('.chk').forEach(c=>{
-  const id=c.dataset.id;
-  if(store[id])c.classList.add('on');
-  c.addEventListener('click',e=>{
-    e.stopPropagation();
-    c.classList.toggle('on');
-    store[id]=c.classList.contains('on');save();updateProgress();
-  });
+  const id=c.dataset.id;if(store[id])c.classList.add('on');
+  c.addEventListener('click',e=>{e.stopPropagation();c.classList.toggle('on');store[id]=c.classList.contains('on');save();updateProgress();});
 });
 updateProgress();
 document.querySelectorAll('.slot-h').forEach(h=>{h.addEventListener('click',()=>h.parentElement.classList.toggle('open'));});
 let expanded=true;
 document.getElementById('expandAll').textContent='모두 접기';
 document.getElementById('expandAll').addEventListener('click',e=>{
-  expanded=!expanded;
-  document.querySelectorAll('.slot').forEach(s=>s.classList.toggle('open',expanded));
+  expanded=!expanded;document.querySelectorAll('.slot').forEach(s=>s.classList.toggle('open',expanded));
   e.target.textContent=expanded?'모두 접기':'모두 펼치기';
 });
 document.getElementById('resetChk').addEventListener('click',()=>{
-  store={};save();
-  document.querySelectorAll('.chk').forEach(c=>c.classList.remove('on'));
-  updateProgress();
+  store={};save();document.querySelectorAll('.chk').forEach(c=>c.classList.remove('on'));updateProgress();
 });
 document.querySelectorAll('.btn[data-mode]').forEach(b=>{
   b.addEventListener('click',()=>{
-    document.querySelectorAll('.btn[data-mode]').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    const m=b.dataset.mode;
-    root.classList.remove('hideMode','hideWarn');
+    document.querySelectorAll('.btn[data-mode]').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+    const m=b.dataset.mode;root.classList.remove('hideMode','hideWarn');
     if(m==='change'){root.classList.add('hideMode');document.querySelectorAll('.slot').forEach(s=>s.classList.add('open'))}
     else if(m==='warn'){root.classList.add('hideWarn');document.querySelectorAll('.slot').forEach(s=>s.classList.add('open'))}
   });
