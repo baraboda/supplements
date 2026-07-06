@@ -154,7 +154,7 @@
 
 <div class="section painbox">
   <h2>😵 어지러움·저혈당 — 이번에 크게 개선</h2>
-  <p><b>R-ALA를 아침 공복 → 점심 직전(식전 30분)</b>으로 옮겼습니다. 아침을 안 드시는데 공복에 R-ALA를 먹으면 <b style="color:var(--change)">혈당이 떨어져 어지러울</b> 수 있어서, 식사가 곧 오는 점심 직전이 안전합니다. 베르베린도 탄수화물이 있는 점심에 둬서 저혈당 위험을 낮췄어요.</p>
+  <p><b>R-ALA는 "오후(점심 2–3시간 후) 단독"</b>에 뒀습니다. R-ALA는 미네랄(아연·Mg·칼슘)을 킬레이트하므로 점심·저녁 미네랄과 <b style="color:var(--change)">2–3시간 떨어뜨려야</b> 하고, 점심을 든든히 드신 뒤라 공복이어도 <b style="color:var(--change)">저혈당 위험이 낮은</b> 시간이라서요. 베르베린은 탄수화물 있는 점심에 둬 저혈당 위험을 낮췄습니다.</p>
 </div>
 
 <div class="toolbar">
@@ -178,7 +178,7 @@
 
 <div class="section warnbox">
   <h2>⚠️ 안전·중복 경고</h2>
-  <div class="wrule"><b>점심 미네랄:</b> 아연과 마그네슘이 같은 점심 → 마그네슘은 식사 시작, 아연은 식사 끝물로 분리(경쟁 완화). R-ALA(식전)도 미네랄 킬레이트하니 식사와 30분+ 간격.</div>
+  <div class="wrule"><b>점심 미네랄:</b> 아연과 마그네슘이 같은 점심 → 마그네슘은 식사 시작, 아연은 식사 끝물로 분리(경쟁 완화). <b>R-ALA는 미네랄을 킬레이트하므로 점심에서 빼 오후 단독</b>으로(양쪽 미네랄과 2–3시간 분리).</div>
   <div class="wrule"><b>티아민 3중(의도된 고용량):</b> Thiamax+Thiactive B+Benfotiamine. 마그네슘 동반 필수, 오후·저녁 금지.</div>
   <div class="wrule"><b>출혈 스택:</b> 나토키나제+은행+오메가-3. 항응고제·수술 시 의사 상담.</div>
   <div class="wrule"><b>저혈당:</b> R-ALA·베르베린 — 음식과 함께, 혈당약 병용 시 모니터링.</div>
@@ -197,13 +197,12 @@ const slots=[
  {time:"05:00",title:"기상 직후 · 장 해독 바인더",where:"home",color:"--dawn",intro:"집. 물 한 컵, 복용 후 10분 휴식.",items:[
    {n:"GI Detox",d:"2캡슐",badge:["water"],why:"흡착 바인더 — 빈속. <b>다른 모든 것과 2시간 분리</b>.",src:[["📄 바인더 분리","https://drcrista.com/blogs/news/timing-of-non-food-based-binders"]]},
  ]},
- {time:"아침",title:"기상 후 공복 (아침 식사 없음)",where:"home",color:"--morning",intro:"집. 빈속. 혈당 낮추는 R-ALA는 여기서 뺐고(점심 직전으로), 여기 3종은 저혈당 걱정 없는 것들.",items:[
+ {time:"아침",title:"기상 후 공복 (아침 식사 없음)",where:"home",color:"--morning",intro:"집. 빈속. 혈당 낮추는 R-ALA는 여기서 뺐고(오후 단독으로), 여기 3종은 저혈당 걱정 없는 것들.",items:[
    {n:"NMNH (MAAC10)",d:"250mg",badge:["fast"],why:"NAD+ <b>아침 정점</b> — 아침 복용. 혈당에 영향 없어 공복 OK.",src:[["📄 타이밍","https://masi.eu/en-usd/blogs/longevity-news/morning-vs-evening-best-time-for-nmn-supplements"]]},
    {n:"Glutathione NACET",d:"",badge:["fast"],why:"아세틸화라 위산에 안정 — 공복 OK, 아침 권장.",src:[["📄 제조사","https://www.objectivenutrients.com/products/glutathione-nacet-complex/"]]},
    {n:"Biocidin LSF",d:"",form:"액상·설하",badge:["fast"],why:"리포좀 액상 — 빈속 설하. (약통 불가, 집에서)",src:[["📄 사용법","https://biocidin.com/pages/biocidin%C2%AE-lsf-suggested-usage-and-ingredients"]]},
  ]},
  {time:"점심",title:"점심 — 주식·첫 끼니·가장 기름진 끼니 (핵심)",where:"carry",color:"--noon",intro:"휴대. 끼니 전반에 나눠서: 식전 → 시작 → 식사 중(지방과) → 끝물(아연).",items:[
-   {n:"R-ALA",d:"600mg",badge:["fast","alone"],step:"식전 30분",why:"식전 빈속 흡수↑. <b>아침 공복 대신 점심 직전</b>으로 옮겨 저혈당·어지럼 방지.",move:"아침 공복 → 점심 직전(식전 30분). 아침 결식 시 공복 R-ALA는 혈당 저하 위험.",warn:"미네랄 킬레이트 — 식사(아연·Mg)와 30분+ 간격. 어지러우면 당분.",src:[["📄 ALA 저혈당","https://pmc.ncbi.nlm.nih.gov/articles/PMC12236385/"],["💬 Reddit","https://www.reddit.com/r/Supplements/comments/15pqnw0/alpha_lipoic_acid_is_dangerous/"]]},
    {n:"Artichoke (Jarrow)",d:"500mg",badge:["food"],step:"식전 15–30분",why:"담즙 촉진 — 가장 기름진 끼니(점심) 식전.",move:"저녁 → 점심. 저녁이 저지방(계란+옥수수)이라 담즙계는 기름진 점심으로.",warn:"담석·담도 폐색 시 금기.",src:[["📄 담즙·지방소화","https://bodybio.com/blogs/blog/tudca-vs-ox-bile-liver-health"],["💬 Reddit","https://www.reddit.com/r/Supplements/comments/1didfh8/digestion_with_betaine_hcl_bitters_and_tudca/"]]},
    {n:"TUDCA + Bitters",d:"",badge:["food","fat"],step:"식사 초반",why:"담즙산 — 지방(점심)과 함께 지방·지용성 소화.",move:"저녁 → 점심(기름진 끼니).",warn:"담석·담도 폐색 시 금기.",src:[["📄 제조사","https://www.objectivenutrients.com/products/tudca-bitters/"],["💬 Reddit","https://www.reddit.com/r/Supplements/comments/1didfh8/digestion_with_betaine_hcl_bitters_and_tudca/"]]},
    {n:"MassZymes (소화효소)",d:"",badge:["food"],step:"식사 시작",why:"단백질·지방 소화 지원 — 식사와.",src:[["📄 제조사","https://support.bioptimizers.com/portal/en/kb/articles/should-i-take-masszymes-on-an-empty-stomach-or-with-food-17-12-2018"]]},
@@ -220,6 +219,9 @@ const slots=[
    {n:"Nutrafol",d:"4캡슐",badge:["fat"],step:"식사 중",why:"1일 4캡슐, 식사와(지용성). 모발.",note:"소진 후 중단 방향(탈모 메모). 아스타잔틴·콜라겐 중복.",src:[["📄 제조사","https://nutrafol.com/women-balance/"]]},
    {n:"Berberine",d:"",badge:["food"],step:"식사 시작",why:"<b>탄수화물 많은 끼니(점심) 시작에</b> — 식후 혈당 완화. 반감기 짧아 실제 탄수 끼니와 맞춰야 함.",move:"저녁 → 점심. 저녁은 저탄수(계란+옥수수)라 효과 적고 저혈당 위험.",warn:"CYP3A4 억제·저혈당 — 처방약 병용 시 상담.",src:[["📄 T2D 시험","https://pmc.ncbi.nlm.nih.gov/articles/PMC2410097/"],["💬 Reddit","https://www.reddit.com/r/lowcarb/comments/11yod20/using_berberine_to_offset_occasional_splurge/"]]},
    {n:"Zinc / Copper",d:"",badge:["food"],step:"식사 끝물",why:"<b>든든한 단백질 식사(점심) 끝물에.</b> 부실하면 거르기. 마그네슘(식사 시작)과 분리, 칼슘(저녁)과 분리.",warn:"빈속·부실한 식사 금물 — 위장통증 원인.",src:[["📄 아연 위장","https://ubiehealth.com/doctors-note/nausea-taking-zinc-empty-stomach-fasting-causes-4242e1"],["💬 Reddit Zn·Mg","https://www.reddit.com/r/Supplements/comments/1s0fom0/learned_the_hard_way_that_timing_matters_as_much/"]]},
+ ]},
+ {time:"오후",title:"오후 (점심 2–3시간 후) · R-ALA 단독",where:"carry",color:"--noon",intro:"점심과 저녁 사이 빈속. 미네랄과 안 겹치는 유일한 창.",items:[
+   {n:"R-ALA",d:"600mg",badge:["fast","alone"],why:"<b>단독·빈속.</b> R-ALA는 아연·Mg·구리·철을 킬레이트해 <b>미네랄과 2–3시간 분리 필수</b>. 점심(아연·Mg)·저녁(칼슘) 사이 오후가 유일하게 안 겹치는 시간.",move:"점심 직전 → 오후로 이동. (점심에 두면 미네랄과 겹쳐 서로 흡수 방해 — 이전 배치 오류 수정)",warn:"혈당 저하 가능하나 점심 2–3h 후라 위험 낮음. 어지러우면 당분.",src:[["📄 미네랄 2–3h 분리","https://lpi.oregonstate.edu/mic/dietary-factors/lipoic-acid"],["📄 킬레이트 상호작용","https://tonum.com/blogs/useful-knowledge/what-cannot-mix-with-alpha-lipoic-acid-crucial-clear-warnings"],["💬 Reddit","https://www.reddit.com/r/Supplements/comments/15pqnw0/alpha_lipoic_acid_is_dangerous/"]]},
  ]},
  {time:"저녁",title:"저녁 — 가벼운 식사(계란+옥수수) · 저지방",where:"home",color:"--dinner",intro:"집. 지방 필요한 건 여기 없음. 가루(MSM·Better GI)는 물에 타서.",items:[
    {n:"Ca / Mg (Bluebonnet)",d:"3알",badge:["food"],why:"칼슘은 저녁·1회 ~500mg. 아연(점심)과 6h 분리. 저지방 저녁이라도 칼슘은 지방 불필요.",warn:"갑상선약과 4시간 분리. 저녁 거르면 다음 든든한 끼니로.",src:[["📄 Ca·갑상선약","https://pillo.care/blog/calcium-and-levothyroxine"]]},
@@ -280,8 +282,8 @@ slots.forEach((s,si)=>{
 });
 
 let store={};
-try{store=JSON.parse(localStorage.getItem('sebinSupp5')||'{}')}catch(e){store={}}
-function save(){try{localStorage.setItem('sebinSupp5',JSON.stringify(store))}catch(e){}}
+try{store=JSON.parse(localStorage.getItem('sebinSupp6')||'{}')}catch(e){store={}}
+function save(){try{localStorage.setItem('sebinSupp6',JSON.stringify(store))}catch(e){}}
 function updateProgress(){
   const all=document.querySelectorAll('.chk');const on=document.querySelectorAll('.chk.on');
   const pct=all.length?Math.round(on.length/all.length*100):0;
